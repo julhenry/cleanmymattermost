@@ -1,6 +1,9 @@
 let url, token, userId, teamId, channelId;
-localStorage.removeItem('posts-list');
-localStorage.removeItem('numberOfRequest');
+let currentTargetId = "step-1";
+
+const LocalStorageKeys = {
+    savedURL: 'cleanMyMattermost-savedURL',
+};
 
 (function () {
     'use strict'
@@ -17,9 +20,16 @@ localStorage.removeItem('numberOfRequest');
                 form.classList.add('was-validated')
             }, false)
         })
+
+    localStorage.removeItem('posts-list');
+    localStorage.removeItem('numberOfRequest');
+
+    const url = localStorage.getItem(LocalStorageKeys.savedURL);
+    if(url) $("#url").val(url);
+    const token = localStorage.getItem(LocalStorageKeys.savedURL);
+    if(token) $("#token").val(token);
 })()
 
-let currentTargetId = "step-1";
 function nextStep(target){
     const data = [...$(`#${currentTargetId} input`), ...$(`#${currentTargetId} select`)].reduce(((previousValue, currentValue) => {
         return {
@@ -57,11 +67,13 @@ const handlers = {
     'step-1': ({url: mattermostUrl}) => {
       return new Promise(resolve => {
           url = mattermostUrl + (mattermostUrl.endsWith('/') ? '' : '/');
+          localStorage.setItem(LocalStorageKeys.savedURL, url);
           resolve();
       })
     },
     'step-2': ({token: tkn}) => {
         token = tkn;
+        localStorage.setItem(LocalStorageKeys.savedURL, token);
         return request(url + 'users/me', 'GET')
             .then((response) => {
                 userId = response.id
