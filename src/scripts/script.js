@@ -9,6 +9,7 @@ const LocalStorageKeys = {
 
 const SessionStorageKeys = {
   posts: 'cleanMyMattermost-posts',
+  editCounter: 'cleanMyMattermost-editCounter'
 };
 
 (function () {
@@ -31,6 +32,7 @@ const SessionStorageKeys = {
   if(url) $("#url").val(url);
   const token = localStorage.getItem(LocalStorageKeys.savedToken);
   if(token) $("#token").val(token);
+  sessionStorage.setItem(SessionStorageKeys.editCounter, '0');
 })()
 
 function setStep(target){
@@ -90,88 +92,86 @@ function nextStep(target){
 }
 
 const handlers = {
-  'step-1': ({url: mattermostUrl}) => {
-    return new Promise(resolve => {
-      url = mattermostUrl + (mattermostUrl.endsWith('/') ? '' : '/');
-      localStorage.setItem(LocalStorageKeys.savedURL, url);
-      resolve();
-    })
-  },
-  'step-2': ({token: tkn}) => {
-    token = tkn;
-    localStorage.setItem(LocalStorageKeys.savedToken, token);
-    return request(`${url}users/me`, 'GET')
-      .then((response) => {
-        userId = response.id
-        return request(`${url}users/${userId}/teams`, 'GET')
-          .then((response) => {
-            $("#teamSelect").html('<option selected disabled value="">Choisissez une équipe</option>');
-            response.forEach(teamData => {
-              $("#teamSelect").append(`<option value="${teamData.id}">${teamData['display_name']}</option>`);
+    'step-1': ({url: mattermostUrl}) => {
+      return new Promise(resolve => {
+          url = mattermostUrl + (mattermostUrl.endsWith('/') ? '' : '/');
+          localStorage.setItem(LocalStorageKeys.savedURL, url);
+          resolve();
+      })
+    },
+    'step-2': ({token: tkn}) => {
+        token = tkn;
+        localStorage.setItem(LocalStorageKeys.savedToken, token);
+        return request(`${url}users/me`, 'GET')
+            .then((response) => {
+                userId = response.id
+                return request(`${url}users/${userId}/teams`, 'GET')
+                    .then((response) => {
+                        $("#teamSelect").html('<option selected disabled value="">Choisissez une équipe</option>');
+                        response.forEach(teamData => {
+                            $("#teamSelect").append(`<option value="${teamData.id}">${teamData['display_name']}</option>`);
+                        })
+                        return true;
+                    })
             })
-            return true;
-          })
-      })
-  },
-  'step-3': ({teamSelect}) => {
-    teamId = teamSelect;
-    return request(`${url}users/${userId}/teams/${teamId}/channels`, 'GET')
-      .then((response) => {
-        $("#channelSelect").html('<option selected disabled value="">Choisissez un canal</option>');
-        response.forEach(channelData => {
-          $("#channelSelect").append(`<option id="${channelData.id}" value="${channelData.id}">${channelData.name}</option>`);
-          if(channelData.name.indexOf('__') > -1){
-            const searchUserId = channelData.name.split('__').find(id => id !== userId);
-            if(searchUserId){
-              request(`${url}users/${searchUserId}`, 'GET')
-                .then(userData => {
-                  $(`#${channelData.id}`).html(`${userData['first_name']}  ${userData['last_name']}`)
+    },
+    'step-3': ({teamSelect}) => {
+        teamId = teamSelect;
+        return request(`${url}users/${userId}/teams/${teamId}/channels`, 'GET')
+            .then((response) => {
+                $("#channelSelect").html('<option selected disabled value="">Choisissez un canal</option>');
+                response.forEach(channelData => {
+                    $("#channelSelect").append(`<option id="${channelData.id}" value="${channelData.id}">${channelData.name}</option>`);
+                    if(channelData.name.indexOf('__') > -1){
+                        const searchUserId = channelData.name.split('__').find(id => id !== userId);
+                        if(searchUserId){
+                            request(`${url}users/${searchUserId}`, 'GET')
+                                .then(userData => {
+                                    $(`#${channelData.id}`).html(`${userData['first_name']}  ${userData['last_name']}`)
+                                })
+                        }
+                    }else{
+                        request(`${url}channels/${channelData.id}`, 'GET')
+                            .then((speChannelData) => {
+                                const channelTitleName = speChannelData?.['display_name']?.length ? speChannelData?.['display_name'] : channelData.name;
+                                const channelDescription = speChannelData?.['purpose']?.length ? `(${speChannelData?.['purpose']})` : speChannelData?.header?.length ? `(${speChannelData?.header})` : '';
+                                $(`#${channelData.id}`).html(`${channelTitleName} ${channelDescription}`);
+                            })
+                    }
                 })
-            }
-          }else{
-            request(`${url}channels/${channelData.id}`, 'GET')
-              .then((speChannelData) => {
-                const channelTitleName = speChannelData?.['display_name']?.length ? speChannelData?.['display_name'] : channelData.name;
-                const channelDescription = speChannelData?.['purpose']?.length ? `(${speChannelData?.['purpose']})` : speChannelData?.header?.length ? `(${speChannelData?.header})` : '';
-                $(`#${channelData.id}`).html(`${channelTitleName} ${channelDescription}`);
-              })
+            })
+    },
+    'step-4': ({channelSelect}) => {
+        return new Promise((resolve) => {
+            channelId = channelSelect;
+            resolve();
+        });
+    },
+    'step-5': ({message}) => {
+      return new Promise((async (resolve) => {
+          function getPosts(numberPage = 0) {
+              return request(`${url}channels/${channelId}/posts?page=${numberPage}&per_page=200`, 'GET')
+                  .then((response) => {
+                      const posts = Object.values(response['posts']).filter(p => p['user_id'] === userId);
+                      let currentPosts = JSON.parse(sessionStorage.getItem(SessionStorageKeys.posts)) || [];
+                      const newPosts = currentPosts.concat(posts);
+                      sessionStorage.setItem(SessionStorageKeys.posts, JSON.stringify(newPosts));
+                      return posts.length > 0
+                  })
           }
-        })
-      })
-  },
-  'step-4': ({channelSelect}) => {
-    return new Promise((resolve) => {
-      channelId = channelSelect;
-      resolve();
-    });
-  },
-  'step-5': ({message}) => {
-    return new Promise((async (resolve) => {
-      function getPosts(numberPage = 0) {
-        return request(`${url}channels/${channelId}/posts?page=${numberPage}&per_page=200`, 'GET')
-          .then((response) => {
-            const posts = Object.values(response['posts']).filter(p => p['user_id'] === userId);
-            let currentPosts = JSON.parse(sessionStorage.getItem(SessionStorageKeys.posts)) || [];
-            const newPosts = currentPosts.concat(posts);
-            sessionStorage.setItem(SessionStorageKeys.posts, JSON.stringify(newPosts));
-            if (posts.length > 0) {
-              return getPosts(numberPage + 1);
-            } else {
-              return true;
-            }
-          })
-      }
 
       function removePosts(){
         let posts = JSON.parse(sessionStorage.getItem(SessionStorageKeys.posts));
-        $('#in-progress-post-count').html(`Nombre de messages à supprimer : ${posts.length}`);
 
         if(!posts.length){
           return true;
         }
 
         const post = posts[0];
-        $('#in-progress-label').html(`Suppression du message : ${post.message}`);
+        $('#in-progress-label').html(`Modification du message : ${post.message}`);
+        const editNumber = (parseInt(sessionStorage.getItem(SessionStorageKeys.editCounter)) || 0) + 1;
+        $('#in-progress-post-count').html(`Nombre de messages modifiés : ${editNumber}`);
+        sessionStorage.setItem(SessionStorageKeys.editCounter, editNumber);
         return request(`${url}posts/${post.id}`, 'PUT', {
           ...post,
           message: message
@@ -189,11 +189,15 @@ const handlers = {
           })
       }
 
-      await getPosts(0);
-      await removePosts();
-      resolve();
-    }));
-  },
+          let pageNumber = 0
+          while (await getPosts(pageNumber)) {
+            await removePosts();
+            pageNumber++;
+          }
+
+          resolve();
+      }));
+    },
 }
 
 function request(url, type, data){

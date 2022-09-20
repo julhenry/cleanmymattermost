@@ -15,20 +15,20 @@
       <div class="form-content">
         <div class="form-items">
 
-          <div id="step-1">
-            <form id="requires-validation-1" novalidate target="step-2">
-              <h3>Étape 1/5</h3>
-              <p>Indiquez ci-dessous l'URL du mattermost ciblé.</p>
-              <div class="col-md-12">
-                <input id="url" class="form-control" type="text" name="mattermost-url" placeholder="URL (ex: https://mattermost.afone.com/api/v4/)" required>
-                <div class="valid-feedback">URL valide</div>
-                <div class="invalid-feedback">L'URL indiquée n'est pas valide</div>
-                <div class="form-button mt-5">
-                  <button class="btn btn-primary next-step-button">Étape suivante</button>
-                </div>
-              </div>
-            </form>
-          </div>
+                    <div id="step-1">
+                        <form id="requires-validation-1" novalidate target="step-2">
+                            <h3>Étape 1/5</h3>
+                            <p>Indiquez ci-dessous l'URL du mattermost ciblé.</p>
+                            <div class="col-md-12">
+                                <input id="url" class="form-control" type="text" name="mattermost-url" placeholder="URL (ex: https://mattermost.monentreprise.com/api/v4/)" required>
+                                <div class="valid-feedback">URL valide</div>
+                                <div class="invalid-feedback">L'URL indiquée n'est pas valide</div>
+                                <div class="form-button mt-5">
+                                    <button class="btn btn-primary next-step-button">Étape suivante</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
 
           <div id="step-2" class="hidden">
             <div class="form-button mb-5">
@@ -101,8 +101,8 @@
                 <div class="invalid-feedback">Le message n'est valide</div>
               </div>
               <div class="mt-5">
-                <p id="in-progress-post-count"></p>
-                <p id="in-progress-label"></p>
+                <p id="in-progress-post-count" class="m-0"></p>
+                <p id="in-progress-label" class="m-0"></p>
               </div>
               <div class="form-button mt-5">
                 <button class="btn btn-primary next-step-button">Terminer !</button>
