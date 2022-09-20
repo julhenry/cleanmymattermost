@@ -137,11 +137,7 @@ const handlers = {
                       let currentPosts = JSON.parse(sessionStorage.getItem(SessionStorageKeys.posts)) || [];
                       const newPosts = currentPosts.concat(posts);
                       sessionStorage.setItem(SessionStorageKeys.posts, JSON.stringify(newPosts));
-                      if (posts.length > 0) {
-                          return getPosts(numberPage + 1);
-                      } else {
-                          return true;
-                      }
+                      return posts.length > 0
                   })
           }
 
@@ -170,8 +166,12 @@ const handlers = {
                   })
           }
 
-          await getPosts(0);
-          await removePosts();
+          let pageNumber = 0
+          while (await getPosts(pageNumber)) {
+            await removePosts();
+            pageNumber++;
+          }
+
           resolve();
       }));
     },
