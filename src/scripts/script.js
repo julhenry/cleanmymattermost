@@ -1,6 +1,14 @@
 let url, token, userId, teamId, channelId;
-localStorage.removeItem('posts-list');
-localStorage.removeItem('numberOfRequest');
+let currentTargetId = "step-1";
+
+const LocalStorageKeys = {
+    savedURL: 'cleanMyMattermost-savedURL',
+    savedToken: 'cleanMyMattermost-savedToken',
+};
+
+const SessionStorageKeys = {
+    posts: 'cleanMyMattermost-posts',
+};
 
 (function () {
     'use strict'
@@ -17,9 +25,13 @@ localStorage.removeItem('numberOfRequest');
                 form.classList.add('was-validated')
             }, false)
         })
+
+    const url = localStorage.getItem(LocalStorageKeys.savedURL);
+    if(url) $("#url").val(url);
+    const token = localStorage.getItem(LocalStorageKeys.savedURL);
+    if(token) $("#token").val(token);
 })()
 
-let currentTargetId = "step-1";
 function nextStep(target){
     const data = [...$(`#${currentTargetId} input`), ...$(`#${currentTargetId} select`)].reduce(((previousValue, currentValue) => {
         return {
@@ -57,11 +69,13 @@ const handlers = {
     'step-1': ({url: mattermostUrl}) => {
       return new Promise(resolve => {
           url = mattermostUrl + (mattermostUrl.endsWith('/') ? '' : '/');
+          localStorage.setItem(LocalStorageKeys.savedURL, url);
           resolve();
       })
     },
     'step-2': ({token: tkn}) => {
         token = tkn;
+        localStorage.setItem(LocalStorageKeys.savedToken, token);
         return request(url + 'users/me', 'GET')
             .then((response) => {
                 userId = response.id
@@ -111,9 +125,9 @@ const handlers = {
               return request(`${url}channels/${channelId}/posts?page=${numberPage}&per_page=200`, 'GET')
                   .then((response) => {
                       const posts = Object.values(response['posts']).filter(p => p['user_id'] === userId);
-                      let currentPosts = JSON.parse(localStorage.getItem('posts-list')) || [];
+                      let currentPosts = JSON.parse(sessionStorage.getItem(SessionStorageKeys.posts)) || [];
                       const newPosts = currentPosts.concat(posts);
-                      localStorage.setItem('posts-list', JSON.stringify(newPosts));
+                      sessionStorage.setItem(SessionStorageKeys.posts, JSON.stringify(newPosts));
                       if (posts.length > 0) {
                           return getPosts(numberPage + 1);
                       } else {
@@ -123,8 +137,7 @@ const handlers = {
           }
 
           function removePosts(){
-              let posts = JSON.parse(localStorage.getItem('posts-list'));
-              const numberOfRequest = parseInt(localStorage.getItem('numberOfRequest')) || 1;
+              let posts = JSON.parse(sessionStorage.getItem(SessionStorageKeys.posts));
 
               if(!posts.length){
                   return true;
@@ -137,15 +150,13 @@ const handlers = {
               })
                   .then(() => {
                       posts = posts.filter(p => p.id !== post.id);
-                      localStorage.setItem('posts-list', JSON.stringify(posts));
-                      localStorage.setItem('numberOfRequest', numberOfRequest + 1);
+                      sessionStorage.setItem(SessionStorageKeys.posts, JSON.stringify(posts));
                       return removePosts()
                   })
                   .catch(() => {
                       posts = posts.filter(p => p.id !== post.id);
                       posts.push(post);
-                      localStorage.setItem('posts-list', JSON.stringify(posts));
-                      localStorage.setItem('numberOfRequest', numberOfRequest + 1);
+                      sessionStorage.setItem(SessionStorageKeys.posts, JSON.stringify(posts));
                       return removePosts()
                   })
           }

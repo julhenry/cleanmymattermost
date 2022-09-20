@@ -2,9 +2,9 @@
 <html lang="en" >
 <head>
     <meta charset="UTF-8">
-    <title>CodePen - Registration Form (Bootstrap 5 Validation)</title>
-    <link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css'><link rel="stylesheet" href="./style.css">
-    <link rel="stylesheet" type="text/css" href="fontawesome/fontawesome.css">
+    <title>CleanMyMattermost</title>
+    <link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css'><link rel="stylesheet" href="./src/styles/style.css">
+    <link rel="stylesheet" type="text/css" href="libs/fontawesome/fontawesome.css">
     <script src="https://code.jquery.com/jquery-3.1.1.js"></script>
 
 </head>
@@ -36,7 +36,7 @@
                             <p>Indiquez ci-dessous votre token de session mattermost pour pouvoir accéder aux appels suivants.</p>
                             <div class="col-md-12">
                                 <input id="token" class="form-control" type="text" name="mattermost-token" placeholder="Votre token de session" required>
-                                <div class="valid-feedback">Tokan invalide</div>
+                                <div class="valid-feedback">Token valide</div>
                                 <div class="invalid-feedback">Ce champ ne peut pas être vide.</div>
                                 <div class="form-button mt-5">
                                     <button class="btn btn-primary">Étape suivante</button>
@@ -69,9 +69,6 @@
                             <div class="col-md-12">
                                 <select id="channelSelect" class="form-select mt-3" required>
                                     <option selected disabled value="">Choisissez un canal</option>
-                                    <option value="jweb">Junior Web Developer</option>
-                                    <option value="sweb">Senior Web Developer</option>
-                                    <option value="pmanager">Project Manager</option>
                                 </select>
                                 <div class="valid-feedback">Un canal a bien été sélectionné</div>
                                 <div class="invalid-feedback">Veuillez sélectionner un canal</div>
@@ -107,7 +104,7 @@
         </div>
     </div>
 </div>
-<script  src="./script.js"></script>
+<script  src="./src/scripts/script.js"></script>
 
 </body>
 </html>
