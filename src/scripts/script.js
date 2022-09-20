@@ -28,7 +28,7 @@ const SessionStorageKeys = {
 
     const url = localStorage.getItem(LocalStorageKeys.savedURL);
     if(url) $("#url").val(url);
-    const token = localStorage.getItem(LocalStorageKeys.savedURL);
+    const token = localStorage.getItem(LocalStorageKeys.savedToken);
     if(token) $("#token").val(token);
 })()
 
