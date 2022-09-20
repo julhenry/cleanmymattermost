@@ -1,5 +1,6 @@
-let url, token, userId, teamId, channelId;
+let url, token, userId, teamId, channelId, isNextStepEnable;
 let currentTargetId = "step-1";
+isNextStepEnable = true;
 
 const LocalStorageKeys = {
     savedURL: 'cleanMyMattermost-savedURL',
@@ -33,6 +34,12 @@ const SessionStorageKeys = {
 })()
 
 function nextStep(target){
+    if(!isNextStepEnable){
+        return;
+    }
+
+    isNextStepEnable = false;
+
     const data = [...$(`#${currentTargetId} input`), ...$(`#${currentTargetId} select`)].reduce(((previousValue, currentValue) => {
         return {
             ...previousValue,
@@ -50,8 +57,9 @@ function nextStep(target){
             setTimeout(() => {
                 targetElement.find('button').html(currentText);
                 targetElement.fadeOut(500, () => {
-                    $(`#${target}`).fadeIn(1000, () => {
+                    $(`#${target}`).fadeIn(500, () => {
                         currentTargetId = target;
+                        isNextStepEnable = true;
                     });
                 });
             }, 500);
@@ -60,6 +68,7 @@ function nextStep(target){
             console.log(error);
             setTimeout(() => {
                 $(`#${currentTargetId}`).find('button').html(currentText);
+                isNextStepEnable = true;
             }, 500);
         })
 
@@ -76,7 +85,7 @@ const handlers = {
     'step-2': ({token: tkn}) => {
         token = tkn;
         localStorage.setItem(LocalStorageKeys.savedToken, token);
-        return request(url + 'users/me', 'GET')
+        return request(`${url}users/me`, 'GET')
             .then((response) => {
                 userId = response.id
                 return request(`${url}users/${userId}/teams`, 'GET')
