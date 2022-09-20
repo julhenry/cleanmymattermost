@@ -33,6 +33,21 @@ const SessionStorageKeys = {
     if(token) $("#token").val(token);
 })()
 
+function setStep(target){
+    if(!isNextStepEnable){
+        return;
+    }
+
+    isNextStepEnable = false;
+
+    $(`#${currentTargetId}`).fadeOut(500, () => {
+        $(`#${target}`).fadeIn(500, () => {
+            currentTargetId = target;
+            isNextStepEnable = true;
+        });
+    })
+}
+
 function nextStep(target){
     if(!isNextStepEnable){
         return;
@@ -48,14 +63,14 @@ function nextStep(target){
     }), {});
 
     const targetElement = $(`#${currentTargetId}`);
-    const currentText = targetElement.find('button').html();
-    targetElement.find('button').html('<div class="spinner-border" role="status"></div>');
+    const currentText = targetElement.find('.next-step-button').html();
+    targetElement.find('.next-step-button').html('<div class="spinner-border" role="status"></div>');
 
 
     handlers[currentTargetId](data)
         .then(() => {
             setTimeout(() => {
-                targetElement.find('button').html(currentText);
+                targetElement.find('.next-step-button').html(currentText);
                 targetElement.fadeOut(500, () => {
                     $(`#${target}`).fadeIn(500, () => {
                         currentTargetId = target;
@@ -67,7 +82,7 @@ function nextStep(target){
         .catch((error) => {
             console.log(error);
             setTimeout(() => {
-                $(`#${currentTargetId}`).find('button').html(currentText);
+                $(`#${currentTargetId}`).find('.next-step-button').html(currentText);
                 isNextStepEnable = true;
             }, 500);
         })
@@ -90,6 +105,7 @@ const handlers = {
                 userId = response.id
                 return request(`${url}users/${userId}/teams`, 'GET')
                     .then((response) => {
+                        $("#teamSelect").html('<option selected disabled value="">Choisissez une équipe</option>');
                         response.forEach(teamData => {
                             $("#teamSelect").append(`<option value="${teamData.id}">${teamData['display_name']}</option>`);
                         })
@@ -101,6 +117,7 @@ const handlers = {
         teamId = teamSelect;
         return request(`${url}users/${userId}/teams/${teamId}/channels`, 'GET')
             .then((response) => {
+                $("#channelSelect").html('<option selected disabled value="">Choisissez un canal</option>');
                 response.forEach(channelData => {
                     $("#channelSelect").append(`<option id="${channelData.id}" value="${channelData.id}">${channelData.name}</option>`);
                     if(channelData.name.indexOf('__') > -1){
