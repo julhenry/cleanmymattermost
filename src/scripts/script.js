@@ -3,89 +3,91 @@ let currentTargetId = "step-1";
 isNextStepEnable = true;
 
 const LocalStorageKeys = {
-    savedURL: 'cleanMyMattermost-savedURL',
-    savedToken: 'cleanMyMattermost-savedToken',
+  savedURL: 'cleanMyMattermost-savedURL',
+  savedToken: 'cleanMyMattermost-savedToken',
 };
 
 const SessionStorageKeys = {
-    posts: 'cleanMyMattermost-posts',
+  posts: 'cleanMyMattermost-posts',
+  editCounter: 'cleanMyMattermost-editCounter'
 };
 
 (function () {
-    'use strict'
-    const forms = document.querySelectorAll('form')
-    Array.from(forms)
-        .forEach(function (form) {
-            form.addEventListener('submit', function (event) {
-                event.preventDefault()
-                event.stopPropagation()
-                if (form.checkValidity()) {
-                    nextStep($(form).attr('target'))
-                }
+  'use strict'
+  const forms = document.querySelectorAll('form')
+  Array.from(forms)
+    .forEach(function (form) {
+      form.addEventListener('submit', function (event) {
+        event.preventDefault()
+        event.stopPropagation()
+        if (form.checkValidity()) {
+          nextStep($(form).attr('target'))
+        }
 
-                form.classList.add('was-validated')
-            }, false)
-        })
+        form.classList.add('was-validated')
+      }, false)
+    })
 
-    const url = localStorage.getItem(LocalStorageKeys.savedURL);
-    if(url) $("#url").val(url);
-    const token = localStorage.getItem(LocalStorageKeys.savedToken);
-    if(token) $("#token").val(token);
+  const url = localStorage.getItem(LocalStorageKeys.savedURL);
+  if(url) $("#url").val(url);
+  const token = localStorage.getItem(LocalStorageKeys.savedToken);
+  if(token) $("#token").val(token);
+  sessionStorage.setItem(SessionStorageKeys.editCounter, '0');
 })()
 
 function setStep(target){
-    if(!isNextStepEnable){
-        return;
-    }
+  if(!isNextStepEnable){
+    return;
+  }
 
-    isNextStepEnable = false;
+  isNextStepEnable = false;
 
-    $(`#${currentTargetId}`).fadeOut(500, () => {
-        $(`#${target}`).fadeIn(500, () => {
-            currentTargetId = target;
-            isNextStepEnable = true;
-        });
-    })
+  $(`#${currentTargetId}`).fadeOut(500, () => {
+    $(`#${target}`).fadeIn(500, () => {
+      currentTargetId = target;
+      isNextStepEnable = true;
+    });
+  })
 }
 
 function nextStep(target){
-    if(!isNextStepEnable){
-        return;
+  if(!isNextStepEnable){
+    return;
+  }
+
+  isNextStepEnable = false;
+
+  const data = [...$(`#${currentTargetId} input`), ...$(`#${currentTargetId} select`)].reduce(((previousValue, currentValue) => {
+    return {
+      ...previousValue,
+      [$(currentValue).attr('id')]: $(currentValue).val()
     }
+  }), {});
 
-    isNextStepEnable = false;
-
-    const data = [...$(`#${currentTargetId} input`), ...$(`#${currentTargetId} select`)].reduce(((previousValue, currentValue) => {
-        return {
-            ...previousValue,
-            [$(currentValue).attr('id')]: $(currentValue).val()
-        }
-    }), {});
-
-    const targetElement = $(`#${currentTargetId}`);
-    const currentText = targetElement.find('.next-step-button').html();
-    targetElement.find('.next-step-button').html('<div class="spinner-border" role="status"></div>');
+  const targetElement = $(`#${currentTargetId}`);
+  const currentText = targetElement.find('.next-step-button').html();
+  targetElement.find('.next-step-button').html('<div class="spinner-border" role="status"></div>');
 
 
-    handlers[currentTargetId](data)
-        .then(() => {
-            setTimeout(() => {
-                targetElement.find('.next-step-button').html(currentText);
-                targetElement.fadeOut(500, () => {
-                    $(`#${target}`).fadeIn(500, () => {
-                        currentTargetId = target;
-                        isNextStepEnable = true;
-                    });
-                });
-            }, 500);
-        })
-        .catch((error) => {
-            console.log(error);
-            setTimeout(() => {
-                $(`#${currentTargetId}`).find('.next-step-button').html(currentText);
-                isNextStepEnable = true;
-            }, 500);
-        })
+  handlers[currentTargetId](data)
+    .then(() => {
+      setTimeout(() => {
+        targetElement.find('.next-step-button').html(currentText);
+        targetElement.fadeOut(500, () => {
+          $(`#${target}`).fadeIn(500, () => {
+            currentTargetId = target;
+            isNextStepEnable = true;
+          });
+        });
+      }, 500);
+    })
+    .catch((error) => {
+      console.log(error);
+      setTimeout(() => {
+        $(`#${currentTargetId}`).find('.next-step-button').html(currentText);
+        isNextStepEnable = true;
+      }, 500);
+    })
 
 }
 
@@ -158,30 +160,34 @@ const handlers = {
                   })
           }
 
-          function removePosts(){
-              let posts = JSON.parse(sessionStorage.getItem(SessionStorageKeys.posts));
+      function removePosts(){
+        let posts = JSON.parse(sessionStorage.getItem(SessionStorageKeys.posts));
 
-              if(!posts.length){
-                  return true;
-              }
+        if(!posts.length){
+          return true;
+        }
 
-              const post = posts[0];
-              return request(`${url}posts/${post.id}`, 'PUT', {
-                  ...post,
-                  message: message
-              })
-                  .then(() => {
-                      posts = posts.filter(p => p.id !== post.id);
-                      sessionStorage.setItem(SessionStorageKeys.posts, JSON.stringify(posts));
-                      return removePosts()
-                  })
-                  .catch(() => {
-                      posts = posts.filter(p => p.id !== post.id);
-                      posts.push(post);
-                      sessionStorage.setItem(SessionStorageKeys.posts, JSON.stringify(posts));
-                      return removePosts()
-                  })
-          }
+        const post = posts[0];
+        $('#in-progress-label').html(`Modification du message : ${post.message}`);
+        const editNumber = (parseInt(sessionStorage.getItem(SessionStorageKeys.editCounter)) || 0) + 1;
+        $('#in-progress-post-count').html(`Nombre de messages modifiés : ${editNumber}`);
+        sessionStorage.setItem(SessionStorageKeys.editCounter, editNumber);
+        return request(`${url}posts/${post.id}`, 'PUT', {
+          ...post,
+          message: message
+        })
+          .then(() => {
+            posts = posts.filter(p => p.id !== post.id);
+            sessionStorage.setItem(SessionStorageKeys.posts, JSON.stringify(posts));
+            return removePosts()
+          })
+          .catch(() => {
+            posts = posts.filter(p => p.id !== post.id);
+            posts.push(post);
+            sessionStorage.setItem(SessionStorageKeys.posts, JSON.stringify(posts));
+            return removePosts()
+          })
+      }
 
           let pageNumber = 0
           while (await getPosts(pageNumber)) {
@@ -195,21 +201,21 @@ const handlers = {
 }
 
 function request(url, type, data){
-    return new Promise(((resolve, reject) => {
-        // noinspection JSUnusedGlobalSymbols
-        $.ajax({
-            url,
-            type,
-            beforeSend: function (xhr) {
-                xhr.setRequestHeader('Authorization', 'bearer ' + token);
-            },
-            data: type === 'GET' ? data : JSON.stringify(data),
-            dataType : "json",
-            contentType: "application/json; charset=utf-8",
-            success: (data) => {
-                resolve(data)
-            },
-            error: reject,
-        });
-    }))
+  return new Promise(((resolve, reject) => {
+    // noinspection JSUnusedGlobalSymbols
+    $.ajax({
+      url,
+      type,
+      beforeSend: function (xhr) {
+        xhr.setRequestHeader('Authorization', 'bearer ' + token);
+      },
+      data: type === 'GET' ? data : JSON.stringify(data),
+      dataType : "json",
+      contentType: "application/json; charset=utf-8",
+      success: (data) => {
+        resolve(data)
+      },
+      error: reject,
+    });
+  }))
 }
