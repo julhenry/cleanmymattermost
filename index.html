@@ -24,13 +24,16 @@
                                 <div class="valid-feedback">URL valide</div>
                                 <div class="invalid-feedback">L'URL indiquée n'est pas valide</div>
                                 <div class="form-button mt-5">
-                                    <button class="btn btn-primary">Étape suivante</button>
+                                    <button class="btn btn-primary next-step-button">Étape suivante</button>
                                 </div>
                             </div>
                         </form>
                     </div>
 
                     <div id="step-2" class="hidden">
+                        <div class="form-button mb-5">
+                            <button class="btn btn-primary" onclick="setStep('step-1')"><i class="fa fa-arrow-left" aria-hidden="true"></i></button>
+                        </div>
                         <form id="requires-validation-2" novalidate target="step-3">
                             <h3>Étape 2/5</h3>
                             <p>Indiquez ci-dessous votre token de session mattermost pour pouvoir accéder aux appels suivants.</p>
@@ -39,13 +42,16 @@
                                 <div class="valid-feedback">Token valide</div>
                                 <div class="invalid-feedback">Ce champ ne peut pas être vide.</div>
                                 <div class="form-button mt-5">
-                                    <button class="btn btn-primary">Étape suivante</button>
+                                    <button class="btn btn-primary next-step-button">Étape suivante</button>
                                 </div>
                             </div>
                         </form>
                     </div>
 
                     <div id="step-3" class="hidden">
+                        <div class="form-button mb-5">
+                            <button class="btn btn-primary" onclick="setStep('step-2')"><i class="fa fa-arrow-left" aria-hidden="true"></i></button>
+                        </div>
                         <form id="requires-validation-3" novalidate target="step-4">
                             <h3>Étape 3/5</h3>
                             <p>Sélectionnez dans la liste ci-dessous une équipe.</p>
@@ -57,12 +63,15 @@
                                 <div class="invalid-feedback">Veuillez sélectionner une équipe</div>
                             </div>
                             <div class="form-button mt-5">
-                                <button class="btn btn-primary">Étape suivante</button>
+                                <button class="btn btn-primary next-step-button">Étape suivante</button>
                             </div>
                         </form>
                     </div>
 
                     <div id="step-4" class="hidden">
+                        <div class="form-button mb-5">
+                            <button class="btn btn-primary" onclick="setStep('step-3')"><i class="fa fa-arrow-left" aria-hidden="true"></i></button>
+                        </div>
                         <form id="requires-validation-4" novalidate target="step-5">
                             <h3>Étape 4/5</h3>
                             <p>Sélectionnez dans la liste ci-dessous le canal souhaité.</p>
@@ -74,22 +83,25 @@
                                 <div class="invalid-feedback">Veuillez sélectionner un canal</div>
                             </div>
                             <div class="form-button mt-5">
-                                <button class="btn btn-primary">Étape suivante</button>
+                                <button class="btn btn-primary next-step-button">Étape suivante</button>
                             </div>
                         </form>
                     </div>
 
                     <div id="step-5" class="hidden">
+                        <div class="form-button mb-4">
+                            <button class="btn btn-primary" onclick="setStep('step-1')"><i class="fa fa-arrow-left" aria-hidden="true"></i></button>
+                        </div>
                         <form id="requires-validation-5" novalidate target="final-step">
                             <h3>Étape 5/5 (Ouf ! Enfin !!)</h3>
                             <p>Conseil : un message supprimé n'est pas définitivement supprimé en base de donnée. Il est donc préférable de le modifier.</p>
                             <div class="col-md-12">
                                 <input id="message" class="form-control" type="text" name="mattermost-message" placeholder="Remplacer tous mes messages par ce message :" required>
-                                <div class="valid-feedback">Le massage est valide</div>
+                                <div class="valid-feedback">Le message est valide</div>
                                 <div class="invalid-feedback">Le message n'est valide</div>
                             </div>
                             <div class="form-button mt-5">
-                                <button class="btn btn-primary">Terminer !</button>
+                                <button class="btn btn-primary next-step-button">Terminer !</button>
                             </div>
                         </form>
                     </div>
@@ -97,6 +109,9 @@
                     <div id="final-step" class="hidden">
                         <h3>Félicitations !</h3>
                         <p>la modification est terminée.</p>
+                        <div class="form-button mt-5">
+                            <button onclick="onEnd()" class="btn btn-primary next-step-button">Retour au début</button>
+                        </div>
                     </div>
 
                 </div>
@@ -105,6 +120,10 @@
     </div>
 </div>
 <script  src="./src/scripts/script.js"></script>
-
+<script>
+    function onEnd(){
+        document.location = 'index.html'
+    }
+</script>
 </body>
 </html>
