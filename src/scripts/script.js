@@ -184,7 +184,6 @@ const handlers = {
           })
           .catch(() => {
             posts = posts.filter(p => p.id !== post.id);
-            posts.push(post);
             sessionStorage.setItem(SessionStorageKeys.posts, JSON.stringify(posts));
             return removePosts()
           })
