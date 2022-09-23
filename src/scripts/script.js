@@ -107,7 +107,7 @@ const handlers = {
         userId = response.id
         return request(`${url}users/${userId}/teams`, 'GET')
           .then((response) => {
-            $("#teamSelect").html('<option selected disabled value="">Choisissez une équipe</option>');
+            $("#teamSelect").html('<option selected disabled value="">Select a team</option>');
             response.forEach(teamData => {
               $("#teamSelect").append(`<option value="${teamData.id}">${teamData['display_name']}</option>`);
             })
@@ -119,7 +119,7 @@ const handlers = {
     teamId = teamSelect;
     return request(`${url}users/${userId}/teams/${teamId}/channels`, 'GET')
       .then((response) => {
-        $("#channelSelect").html('<option selected disabled value="">Choisissez un canal</option>');
+        $("#channelSelect").html('<option selected disabled value="">Select a channel</option>');
         response.forEach(channelData => {
           $("#channelSelect").append(`<option id="${channelData.id}" value="${channelData.id}">${channelData.name}</option>`);
           if (channelData.name.indexOf('__') > -1) {
@@ -169,9 +169,9 @@ const handlers = {
         }
 
         const post = posts[0];
-        $('#in-progress-label').html(`Modification du message : ${post.message}`);
+        $('#in-progress-label').html(`Updating : ${post.message}`);
         const editNumber = (parseInt(sessionStorage.getItem(SessionStorageKeys.editCounter)) || 0) + 1;
-        $('#in-progress-post-count').html(`Nombre de messages modifiés : ${editNumber}`);
+        $('#in-progress-post-count').html(`${editNumber} messages updated`);
         sessionStorage.setItem(SessionStorageKeys.editCounter, editNumber);
         return request(`${url}posts/${post.id}`, 'PUT', {
           ...post,
