@@ -29,14 +29,14 @@ const SessionStorageKeys = {
     })
 
   const url = localStorage.getItem(LocalStorageKeys.savedURL);
-  if(url) $("#url").val(url);
+  if (url) $("#url").val(url);
   const token = localStorage.getItem(LocalStorageKeys.savedToken);
-  if(token) $("#token").val(token);
+  if (token) $("#token").val(token);
   sessionStorage.setItem(SessionStorageKeys.editCounter, '0');
 })()
 
-function setStep(target){
-  if(!isNextStepEnable){
+function setStep(target) {
+  if (!isNextStepEnable) {
     return;
   }
 
@@ -50,8 +50,8 @@ function setStep(target){
   })
 }
 
-function nextStep(target){
-  if(!isNextStepEnable){
+function nextStep(target) {
+  if (!isNextStepEnable) {
     return;
   }
 
@@ -92,14 +92,14 @@ function nextStep(target){
 }
 
 const handlers = {
-  'step-1': ({url: mattermostUrl}) => {
+  'step-1': ({ url: mattermostUrl }) => {
     return new Promise(resolve => {
       url = mattermostUrl + (mattermostUrl.endsWith('/') ? '' : '/');
       localStorage.setItem(LocalStorageKeys.savedURL, url);
       resolve();
     })
   },
-  'step-2': ({token: tkn}) => {
+  'step-2': ({ token: tkn }) => {
     token = tkn;
     localStorage.setItem(LocalStorageKeys.savedToken, token);
     return request(`${url}users/me`, 'GET')
@@ -107,7 +107,7 @@ const handlers = {
         userId = response.id
         return request(`${url}users/${userId}/teams`, 'GET')
           .then((response) => {
-            $("#teamSelect").html('<option selected disabled value="">Choisissez une équipe</option>');
+            $("#teamSelect").html('<option selected disabled value="">Select a team</option>');
             response.forEach(teamData => {
               $("#teamSelect").append(`<option value="${teamData.id}">${teamData['display_name']}</option>`);
             })
@@ -115,23 +115,23 @@ const handlers = {
           })
       })
   },
-  'step-3': ({teamSelect}) => {
+  'step-3': ({ teamSelect }) => {
     teamId = teamSelect;
     return request(`${url}users/${userId}/teams/${teamId}/channels`, 'GET')
       .then((response) => {
-        $("#channelSelect").html('<option selected disabled value="">Choisissez un canal</option>');
+        $("#channelSelect").html('<option selected disabled value="">Select a channel</option>');
         response.forEach(channelData => {
           $("#channelSelect").append(`<option id="${channelData.id}" value="${channelData.id}">${channelData.name}</option>`);
-          if(channelData.name.indexOf('__') > -1){
+          if (channelData.name.indexOf('__') > -1) {
             const searchUserId = channelData.name.split('__').find(id => id !== userId);
-            if(searchUserId){
+            if (searchUserId) {
               request(`${url}users/${searchUserId}`, 'GET')
                 .then(userData => {
                   const username = userData['first_name']?.length ? `${userData['first_name']}  ${userData['last_name']}` : userData.username;
                   $(`#${channelData.id}`).html(username);
                 })
             }
-          }else{
+          } else {
             request(`${url}channels/${channelData.id}`, 'GET')
               .then((speChannelData) => {
                 const channelTitleName = speChannelData?.['display_name']?.length ? speChannelData?.['display_name'] : channelData.name;
@@ -142,13 +142,13 @@ const handlers = {
         })
       })
   },
-  'step-4': ({channelSelect}) => {
+  'step-4': ({ channelSelect }) => {
     return new Promise((resolve) => {
       channelId = channelSelect;
       resolve();
     });
   },
-  'step-5': ({message}) => {
+  'step-5': ({ message }) => {
     return new Promise((async (resolve) => {
       function getPosts(numberPage = 0) {
         return request(`${url}channels/${channelId}/posts?page=${numberPage}&per_page=200`, 'GET')
@@ -161,17 +161,17 @@ const handlers = {
           })
       }
 
-      function removePosts(){
+      function removePosts() {
         let posts = JSON.parse(sessionStorage.getItem(SessionStorageKeys.posts));
 
-        if(!posts.length){
+        if (!posts.length) {
           return true;
         }
 
         const post = posts[0];
-        $('#in-progress-label').html(`Modification du message : ${post.message}`);
+        $('#in-progress-label').html(`Updating : ${post.message}`);
         const editNumber = (parseInt(sessionStorage.getItem(SessionStorageKeys.editCounter)) || 0) + 1;
-        $('#in-progress-post-count').html(`Nombre de messages modifiés : ${editNumber}`);
+        $('#in-progress-post-count').html(`${editNumber} messages updated`);
         sessionStorage.setItem(SessionStorageKeys.editCounter, editNumber);
         return request(`${url}posts/${post.id}`, 'PUT', {
           ...post,
@@ -200,7 +200,7 @@ const handlers = {
   },
 }
 
-function request(url, type, data){
+function request(url, type, data) {
   return new Promise(((resolve, reject) => {
     // noinspection JSUnusedGlobalSymbols
     $.ajax({
@@ -210,7 +210,7 @@ function request(url, type, data){
         xhr.setRequestHeader('Authorization', 'bearer ' + token);
       },
       data: type === 'GET' ? data : JSON.stringify(data),
-      dataType : "json",
+      dataType: "json",
       contentType: "application/json; charset=utf-8",
       success: (data) => {
         resolve(data)
