@@ -1,134 +1,151 @@
 <!DOCTYPE html>
-<html lang="en" >
+<html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>CleanMyMattermost</title>
-  <link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css'><link rel="stylesheet" href="./src/styles/style.css">
+  <link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css'>
+  <link rel="stylesheet" href="./src/styles/style.css">
   <link rel="stylesheet" type="text/css" href="libs/fontawesome/fontawesome.css">
   <script src="https://code.jquery.com/jquery-3.1.1.js"></script>
 
 </head>
+
 <body>
-<div class="form-body">
-  <div class="row">
-    <div class="form-holder">
-      <div class="form-content">
-        <div class="form-items">
+  <div class="form-body">
+    <div class="row">
+      <div class="form-holder">
+        <h1 class="text-center text-white py-3">CleanMyMattermost</h1>
+        <div class="form-content">
+          <div class="form-items">
 
-                    <div id="step-1">
-                        <form id="requires-validation-1" novalidate target="step-2">
-                            <h3>Étape 1/5</h3>
-                            <p>Indiquez ci-dessous l'URL du mattermost ciblé.</p>
-                            <div class="col-md-12">
-                                <input id="url" class="form-control" type="text" name="mattermost-url" placeholder="URL (ex: https://mattermost.monentreprise.com/api/v4/)" required>
-                                <div class="valid-feedback">URL valide</div>
-                                <div class="invalid-feedback">L'URL indiquée n'est pas valide</div>
-                                <div class="form-button mt-5">
-                                    <button class="btn btn-primary next-step-button">Étape suivante</button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-
-          <div id="step-2" class="hidden">
-            <div class="form-button mb-5">
-              <button class="btn btn-primary" onclick="setStep('step-1')"><i class="fa fa-arrow-left" aria-hidden="true"></i></button>
-            </div>
-            <form id="requires-validation-2" novalidate target="step-3">
-              <h3>Étape 2/5</h3>
-              <p>Indiquez ci-dessous votre token de session mattermost pour pouvoir accéder aux appels suivants.</p>
-              <div class="col-md-12">
-                <input id="token" class="form-control" type="text" name="mattermost-token" placeholder="Votre token de session" required>
-                <div class="valid-feedback">Token valide</div>
-                <div class="invalid-feedback">Ce champ ne peut pas être vide.</div>
-                <div class="form-button mt-5">
-                  <button class="btn btn-primary next-step-button">Étape suivante</button>
+            <div id="step-1">
+              <form id="requires-validation-1" novalidate target="step-2">
+                <h3>Step 1/5</h3>
+                <p>A deleted message is not permanently deleted from the database. That's why we recommend you to use
+                  CleanMyMattermost to bulk edit your posts.</p>
+                <p>What's your Mattermost URL ?</p>
+                <div class="col-md-12">
+                  <input id="url" class="form-control" type="text" name="mattermost-url"
+                    placeholder="URL (ex: https://mattermost.monentreprise.com/api/v4/)" required>
+                  <div class="valid-feedback">Valid URL</div>
+                  <div class="invalid-feedback">Invalid URL</div>
+                  <div class="form-button mt-5">
+                    <button class="btn btn-primary next-step-button">Next step</button>
+                  </div>
                 </div>
-              </div>
-            </form>
-          </div>
-
-          <div id="step-3" class="hidden">
-            <div class="form-button mb-5">
-              <button class="btn btn-primary" onclick="setStep('step-2')"><i class="fa fa-arrow-left" aria-hidden="true"></i></button>
+              </form>
             </div>
-            <form id="requires-validation-3" novalidate target="step-4">
-              <h3>Étape 3/5</h3>
-              <p>Sélectionnez dans la liste ci-dessous une équipe.</p>
-              <div class="col-md-12">
-                <select id="teamSelect" class="form-select mt-3" required>
-                  <option selected disabled value="">Choisissez une équipe</option>
-                </select>
-                <div class="valid-feedback">Une équipe est bien sélectionée</div>
-                <div class="invalid-feedback">Veuillez sélectionner une équipe</div>
+
+            <div id="step-2" class="hidden">
+              <div class="form-button mb-5">
+                <button class="btn btn-primary" onclick="setStep('step-1')"><i class="fa fa-arrow-left"
+                    aria-hidden="true"></i></button>
               </div>
+              <form id="requires-validation-2" novalidate target="step-3">
+                <h3>Step 2/5</h3>
+                <p>What's your session token ?</p>
+                <small class="text-muted">You can find it in your MMAUTHTOKEN cookie.</small></br>
+                <small><a target="_blank"
+                    href="https://www.cookieyes.com/blog/how-to-check-cookies-on-your-website-manually/#:~:text=Using%20Chrome%20address%20bar:">How
+                    to find your cookies.</a></small>
+                <div class="col-md-12">
+                  <input id="token" class="form-control" type="text" name="mattermost-token"
+                    placeholder="Votre token de session" required>
+                  <div class="valid-feedback">Valid token</div>
+                  <div class="invalid-feedback">This field can't be empty.</div>
+                  <div class="form-button mt-5">
+                    <button class="btn btn-primary next-step-button">Next step</button>
+                  </div>
+                </div>
+              </form>
+            </div>
+
+            <div id="step-3" class="hidden">
+              <div class="form-button mb-5">
+                <button class="btn btn-primary" onclick="setStep('step-2')"><i class="fa fa-arrow-left"
+                    aria-hidden="true"></i></button>
+              </div>
+              <form id="requires-validation-3" novalidate target="step-4">
+                <h3>Step 3/5</h3>
+                <p>Select a team</p>
+                <div class="col-md-12">
+                  <select id="teamSelect" class="form-select mt-3" required>
+                  </select>
+                  <div class="valid-feedback">Team selected</div>
+                  <div class="invalid-feedback">Select a team</div>
+                </div>
+                <div class="form-button mt-5">
+                  <button class="btn btn-primary next-step-button">Next step</button>
+                </div>
+              </form>
+            </div>
+
+            <div id="step-4" class="hidden">
+              <div class="form-button mb-5">
+                <button class="btn btn-primary" onclick="setStep('step-3')"><i class="fa fa-arrow-left"
+                    aria-hidden="true"></i></button>
+              </div>
+              <form id="requires-validation-4" novalidate target="step-5">
+                <h3>Step 4/5</h3>
+                <p>Select a channel</p>
+                <div class="col-md-12">
+                  <select id="channelSelect" class="form-select mt-3" required>
+                  </select>
+                  <div class="valid-feedback">Channel selected</div>
+                  <div class="invalid-feedback">Select a channel</div>
+                </div>
+                <div class="form-button mt-5">
+                  <button class="btn btn-primary next-step-button">Next step</button>
+                </div>
+              </form>
+            </div>
+
+            <div id="step-5" class="hidden">
+              <div class="form-button mb-4">
+                <button class="btn btn-primary" onclick="setStep('step-1')"><i class="fa fa-arrow-left"
+                    aria-hidden="true"></i></button>
+              </div>
+              <form id="requires-validation-5" novalidate target="final-step">
+                <h3>Step 5/5 (Phew! Finally !!)</h3>
+                <p>Replace my messages with this one...</p>
+                <div class="col-md-12">
+                  <input id="message" class="form-control" type="text" name="mattermost-message"
+                    placeholder=":sunflower:" required>
+                  <div class="valid-feedback">Valid message</div>
+                  <div class="invalid-feedback">Invalid message</div>
+                </div>
+                <div class="mt-5">
+                  <p id="in-progress-post-count" class="m-0"></p>
+                  <p id="in-progress-label" class="m-0"></p>
+                </div>
+                <div class="form-button mt-5">
+                  <button class="btn btn-primary next-step-button">Start updating !</button>
+                </div>
+              </form>
+            </div>
+
+            <div id="final-step" class="hidden">
+              <h3>Congrats !</h3>
+              <p>Your messages have been updated.</p>
               <div class="form-button mt-5">
-                <button class="btn btn-primary next-step-button">Étape suivante</button>
+                <button onclick="onEnd()" class="btn btn-primary next-step-button">Back to start</button>
               </div>
-            </form>
-          </div>
-
-          <div id="step-4" class="hidden">
-            <div class="form-button mb-5">
-              <button class="btn btn-primary" onclick="setStep('step-3')"><i class="fa fa-arrow-left" aria-hidden="true"></i></button>
             </div>
-            <form id="requires-validation-4" novalidate target="step-5">
-              <h3>Étape 4/5</h3>
-              <p>Sélectionnez dans la liste ci-dessous le canal souhaité.</p>
-              <div class="col-md-12">
-                <select id="channelSelect" class="form-select mt-3" required>
-                  <option selected disabled value="">Choisissez un canal</option>
-                </select>
-                <div class="valid-feedback">Un canal a bien été sélectionné</div>
-                <div class="invalid-feedback">Veuillez sélectionner un canal</div>
-              </div>
-              <div class="form-button mt-5">
-                <button class="btn btn-primary next-step-button">Étape suivante</button>
-              </div>
-            </form>
-          </div>
 
-          <div id="step-5" class="hidden">
-            <div class="form-button mb-4">
-              <button class="btn btn-primary" onclick="setStep('step-1')"><i class="fa fa-arrow-left" aria-hidden="true"></i></button>
-            </div>
-            <form id="requires-validation-5" novalidate target="final-step">
-              <h3>Étape 5/5 (Ouf ! Enfin !!)</h3>
-              <p>Conseil : un message supprimé n'est pas définitivement supprimé en base de donnée. Il est donc préférable de le modifier.</p>
-              <div class="col-md-12">
-                <input id="message" class="form-control" type="text" name="mattermost-message" placeholder="Remplacer tous mes messages par ce message :" required>
-                <div class="valid-feedback">Le message est valide</div>
-                <div class="invalid-feedback">Le message n'est valide</div>
-              </div>
-              <div class="mt-5">
-                <p id="in-progress-post-count" class="m-0"></p>
-                <p id="in-progress-label" class="m-0"></p>
-              </div>
-              <div class="form-button mt-5">
-                <button class="btn btn-primary next-step-button">Terminer !</button>
-              </div>
-            </form>
           </div>
-
-          <div id="final-step" class="hidden">
-            <h3>Félicitations !</h3>
-            <p>la modification est terminée.</p>
-            <div class="form-button mt-5">
-              <button onclick="onEnd()" class="btn btn-primary next-step-button">Retour au début</button>
-            </div>
-          </div>
-
         </div>
       </div>
     </div>
   </div>
-</div>
-<script  src="./src/scripts/script.js"></script>
-<script>
-  function onEnd(){
-    document.location = 'index.html'
-  }
-</script>
-<p style="position: absolute;left:0;bottom:0;width: 100%;text-align: center;color: #2acc80;font-size: 10px">Version 0.8.1</p>
+  <script src="./src/scripts/script.js"></script>
+  <script>
+    function onEnd() {
+      document.location = 'index.html'
+    }
+  </script>
+  <p style="position: absolute;left:0;bottom:0;width: 100%;text-align: center;color: #2acc80;font-size: 10px">Version
+    0.8.1</p>
 </body>
+
 </html>
