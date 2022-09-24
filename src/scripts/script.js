@@ -4,7 +4,7 @@ const CONFIG = {
   STEP3: 'step-3',
   STEP4: 'step-4',
   STEP5: 'step-5',
-  POST_PER_PAGE: 200,
+  POSTS_PER_PAGE: 200,
 }
 
 let url, token, userId, teamId, channelId, isNextStepEnable, stopProcess = false;
@@ -162,7 +162,7 @@ const handlers = {
   [CONFIG.STEP5]: ({ message }) => {
     return new Promise((async (resolve) => {
       function getPosts(numberPage = 0) {
-        return request(`${url}channels/${channelId}/posts?page=${numberPage}&per_page=${CONFIG.POST_PER_PAGE}`, 'GET')
+        return request(`${url}channels/${channelId}/posts?page=${numberPage}&per_page=${CONFIG.POSTS_PER_PAGE}`, 'GET')
           .then((response) => {
             const posts = Object.values(response['posts']).filter(p => p['user_id'] === userId);
             let currentPosts = JSON.parse(sessionStorage.getItem(SessionStorageKeys.posts)) || [];
