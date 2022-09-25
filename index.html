@@ -31,7 +31,8 @@
                   <div class="valid-feedback">Valid URL</div>
                   <div class="invalid-feedback">Invalid URL</div>
                   <div class="form-button mt-5">
-                    <button class="btn btn-primary next-step-button">Next step</button>
+                    <button type="submit" class="btn btn-primary next-step-button">Next step</button>
+                    <div class="spinner-border invisible" role="status"></div>
                   </div>
                 </div>
               </form>
@@ -55,7 +56,8 @@
                   <div class="valid-feedback">Valid token</div>
                   <div class="invalid-feedback">This field can't be empty.</div>
                   <div class="form-button mt-5">
-                    <button class="btn btn-primary next-step-button">Next step</button>
+                    <button type="submit" class="btn btn-primary next-step-button">Next step</button>
+                    <div class="spinner-border invisible" role="status"></div>
                   </div>
                 </div>
               </form>
@@ -76,7 +78,8 @@
                   <div class="invalid-feedback">Select a team</div>
                 </div>
                 <div class="form-button mt-5">
-                  <button class="btn btn-primary next-step-button">Next step</button>
+                  <button type="submit" class="btn btn-primary next-step-button">Next step</button>
+                  <div class="spinner-border invisible" role="status"></div>
                 </div>
               </form>
             </div>
@@ -96,7 +99,8 @@
                   <div class="invalid-feedback">Select a channel</div>
                 </div>
                 <div class="form-button mt-5">
-                  <button class="btn btn-primary next-step-button">Next step</button>
+                  <button type="submit" class="btn btn-primary next-step-button">Next step</button>
+                  <div class="spinner-border invisible" role="status"></div>
                 </div>
               </form>
             </div>
@@ -120,7 +124,9 @@
                   <p id="in-progress-label" class="m-0"></p>
                 </div>
                 <div class="form-button mt-5">
-                  <button class="btn btn-primary next-step-button">Start updating !</button>
+                  <button type="submit" class="btn btn-primary next-step-button">Start updating !</button>
+                  <button id="stop-button" class="btn btn-primary invisible" aria-label="Close">Stop now</button>
+                  <div class="spinner-border invisible" role="status"></div>
                 </div>
               </form>
             </div>

@@ -1,5 +1,14 @@
-let url, token, userId, teamId, channelId, isNextStepEnable;
-let currentTargetId = "step-1";
+const CONFIG = {
+  STEP1: 'step-1',
+  STEP2: 'step-2',
+  STEP3: 'step-3',
+  STEP4: 'step-4',
+  STEP5: 'step-5',
+  POSTS_PER_PAGE: 200,
+}
+
+let url, token, userId, teamId, channelId, isNextStepEnable, stopProcess = false;
+let currentTargetId = CONFIG.STEP1;
 isNextStepEnable = true;
 
 const LocalStorageKeys = {
@@ -64,15 +73,14 @@ function nextStep(target) {
     }
   }), {});
 
-  const targetElement = $(`#${currentTargetId}`);
-  const currentText = targetElement.find('.next-step-button').html();
-  targetElement.find('.next-step-button').html('<div class="spinner-border" role="status"></div>');
+  const targetElement = $(`#${currentTargetId}`)
+  targetElement.find('.next-step-button').prop('disabled', true)
+  targetElement.find('.spinner-border').removeClass('invisible')
 
 
   handlers[currentTargetId](data)
     .then(() => {
       setTimeout(() => {
-        targetElement.find('.next-step-button').html(currentText);
         targetElement.fadeOut(500, () => {
           $(`#${target}`).fadeIn(500, () => {
             currentTargetId = target;
@@ -83,8 +91,11 @@ function nextStep(target) {
     })
     .catch((error) => {
       console.log(error);
+    })
+    .finally(() => {
       setTimeout(() => {
-        $(`#${currentTargetId}`).find('.next-step-button').html(currentText);
+        targetElement.find('.next-step-button').prop('disabled', false)
+        targetElement.find('.spinner-border').addClass('invisible')
         isNextStepEnable = true;
       }, 500);
     })
@@ -92,14 +103,14 @@ function nextStep(target) {
 }
 
 const handlers = {
-  'step-1': ({ url: mattermostUrl }) => {
+  [CONFIG.STEP1]: ({ url: mattermostUrl }) => {
     return new Promise(resolve => {
       url = mattermostUrl + (mattermostUrl.endsWith('/') ? '' : '/');
       localStorage.setItem(LocalStorageKeys.savedURL, url);
       resolve();
     })
   },
-  'step-2': ({ token: tkn }) => {
+  [CONFIG.STEP2]: ({ token: tkn }) => {
     token = tkn;
     localStorage.setItem(LocalStorageKeys.savedToken, token);
     return request(`${url}users/me`, 'GET')
@@ -107,15 +118,15 @@ const handlers = {
         userId = response.id
         return request(`${url}users/${userId}/teams`, 'GET')
           .then((response) => {
-            $("#teamSelect").html('<option selected disabled value="">Select a team</option>');
+            $("#teamSelect").html('<option disabled value="">Select a team</option>');
             response.forEach(teamData => {
-              $("#teamSelect").append(`<option value="${teamData.id}">${teamData['display_name']}</option>`);
+              $("#teamSelect").append(`<option selected value="${teamData.id}">${teamData['display_name']}</option>`);
             })
             return true;
           })
       })
   },
-  'step-3': ({ teamSelect }) => {
+  [CONFIG.STEP3]: ({ teamSelect }) => {
     teamId = teamSelect;
     return request(`${url}users/${userId}/teams/${teamId}/channels`, 'GET')
       .then((response) => {
@@ -142,16 +153,16 @@ const handlers = {
         })
       })
   },
-  'step-4': ({ channelSelect }) => {
+  [CONFIG.STEP4]: ({ channelSelect }) => {
     return new Promise((resolve) => {
       channelId = channelSelect;
       resolve();
     });
   },
-  'step-5': ({ message }) => {
+  [CONFIG.STEP5]: ({ message }) => {
     return new Promise((async (resolve) => {
       function getPosts(numberPage = 0) {
-        return request(`${url}channels/${channelId}/posts?page=${numberPage}&per_page=200`, 'GET')
+        return request(`${url}channels/${channelId}/posts?page=${numberPage}&per_page=${CONFIG.POSTS_PER_PAGE}`, 'GET')
           .then((response) => {
             const posts = Object.values(response['posts']).filter(p => p['user_id'] === userId);
             let currentPosts = JSON.parse(sessionStorage.getItem(SessionStorageKeys.posts)) || [];
@@ -189,10 +200,23 @@ const handlers = {
           })
       }
 
+      const stopButton = $(`#${currentTargetId} #stop-button`)
+      stopButton.removeClass('invisible')
+      stopButton.click(() => {
+        stopProcess = true
+        stopButton.html('Stopping...')
+      })
+
       let pageNumber = 0
       while (await getPosts(pageNumber)) {
         await removePosts();
         pageNumber++;
+        if (stopProcess) {
+          stopProcess = false
+          stopButton.addClass('invisible')
+          stopButton.html('Stop now')
+          break
+        }
       }
 
       resolve();
