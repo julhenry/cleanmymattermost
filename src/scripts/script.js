@@ -7,7 +7,7 @@ const CONFIG = {
   POSTS_PER_PAGE: 200,
 }
 
-let url, token, userId, teamId, channelId, isNextStepEnable, stopProcess = false;
+let url, token, userId, teamId, channelId, isNextStepEnable, stopProcess = false, deleteAfterEditing = false;
 let currentTargetId = CONFIG.STEP1;
 isNextStepEnable = true;
 
@@ -69,7 +69,7 @@ function nextStep(target) {
   const data = [...$(`#${currentTargetId} input`), ...$(`#${currentTargetId} select`)].reduce(((previousValue, currentValue) => {
     return {
       ...previousValue,
-      [$(currentValue).attr('id')]: $(currentValue).val()
+      [$(currentValue).attr('id')]: $(currentValue).val(),
     }
   }), {});
 
@@ -161,6 +161,7 @@ const handlers = {
   },
   [CONFIG.STEP5]: ({ message }) => {
     return new Promise((async (resolve) => {
+      deleteAfterEditing = $('#deleteAfterEditing').is(':checked');
       function getPosts(numberPage = 0) {
         return request(`${url}channels/${channelId}/posts?page=${numberPage}&per_page=${CONFIG.POSTS_PER_PAGE}`, 'GET')
           .then((response) => {
@@ -189,6 +190,9 @@ const handlers = {
           message: message
         })
           .then(() => {
+            if (deleteAfterEditing) {
+              request(`${url}posts/${post.id}`, 'DELETE');
+            }
             posts = posts.filter(p => p.id !== post.id);
             sessionStorage.setItem(SessionStorageKeys.posts, JSON.stringify(posts));
             return removePosts()
