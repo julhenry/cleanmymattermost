@@ -169,7 +169,7 @@ const handlers = {
             let currentPosts = JSON.parse(sessionStorage.getItem(SessionStorageKeys.posts)) || [];
             const newPosts = currentPosts.concat(posts);
             sessionStorage.setItem(SessionStorageKeys.posts, JSON.stringify(newPosts));
-            return posts.length > 0
+            return Object.values(response['posts']).length > 0
           })
       }
 
