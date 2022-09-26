@@ -7,7 +7,7 @@ const CONFIG = {
   POSTS_PER_PAGE: 200,
 }
 
-let url, token, userId, teamId, channelId, isNextStepEnable, stopProcess = false, deleteAfterEditing = false;
+let url, token, userId, teamId, channelId, isNextStepEnable, stopProcess = false;
 let currentTargetId = CONFIG.STEP1;
 isNextStepEnable = true;
 
@@ -161,7 +161,7 @@ const handlers = {
   },
   [CONFIG.STEP5]: ({ message }) => {
     return new Promise((async (resolve) => {
-      deleteAfterEditing = $('#deleteAfterEditing').is(':checked');
+      const deleteAfterEditing = $('#deleteAfterEditing').is(':checked');
       function getPosts(numberPage = 0) {
         return request(`${url}channels/${channelId}/posts?page=${numberPage}&per_page=${CONFIG.POSTS_PER_PAGE}`, 'GET')
           .then((response) => {
