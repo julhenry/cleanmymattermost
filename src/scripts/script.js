@@ -130,7 +130,6 @@ const handlers = {
     teamId = teamSelect;
     return request(`${url}users/${userId}/teams/${teamId}/channels`, 'GET')
       .then(async (response) => {
-        console.log(response)
         $("#channelSelect").html('<option selected disabled value="">Select a channel</option>');
         let channelPromises = [];
         response.forEach(channelData => {
