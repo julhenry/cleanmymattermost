@@ -129,7 +129,7 @@ const handlers = {
   [CONFIG.STEP3]: ({ teamSelect }) => {
     teamId = teamSelect;
     return request(`${url}users/${userId}/teams/${teamId}/channels`, 'GET')
-      .then(async (response) => {
+      .then((response) => {
         $("#channelSelect").html('<option selected disabled value="">Select a channel</option>');
         let channelPromises = [];
         response.forEach(channelData => {
