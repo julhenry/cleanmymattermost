@@ -131,26 +131,43 @@ const handlers = {
     return request(`${url}users/${userId}/teams/${teamId}/channels`, 'GET')
       .then((response) => {
         $("#channelSelect").html('<option selected disabled value="">Select a channel</option>');
+        let channelPromises = [];
         response.forEach(channelData => {
-          $("#channelSelect").append(`<option id="${channelData.id}" value="${channelData.id}">${channelData.name}</option>`);
           if (channelData.name.indexOf('__') > -1) {
             const searchUserId = channelData.name.split('__').find(id => id !== userId);
-            if (searchUserId) {
-              request(`${url}users/${searchUserId}`, 'GET')
+            if(searchUserId){
+              channelPromises.push(request(`${url}users/${searchUserId}`, 'GET')
                 .then(userData => {
                   const username = userData['first_name']?.length ? `${userData['first_name']}  ${userData['last_name']}` : userData.username;
-                  $(`#${channelData.id}`).html(username);
-                })
+                  return {
+                    ...channelData,
+                    nameToDisplay: username,
+                  }
+                }))
             }
-          } else {
-            request(`${url}channels/${channelData.id}`, 'GET')
+          }else{
+            channelPromises.push(request(`${url}channels/${channelData.id}`, 'GET')
               .then((speChannelData) => {
                 const channelTitleName = speChannelData?.['display_name']?.length ? speChannelData?.['display_name'] : channelData.name;
                 const channelDescription = speChannelData?.['purpose']?.length ? `(${speChannelData?.['purpose']})` : speChannelData?.header?.length ? `(${speChannelData?.header})` : '';
-                $(`#${channelData.id}`).html(`${channelTitleName} ${channelDescription}`);
-              })
+                return {
+                  ...channelData,
+                  nameToDisplay: `${channelTitleName} ${channelDescription}`,
+                }
+              }))
           }
         })
+
+        return Promise.all(channelPromises).then((channels) => {
+          channels.sort(function(channelA, channelB){
+            if(channelA.nameToDisplay < channelB.nameToDisplay) { return -1; }
+            if(channelA.nameToDisplay > channelB.nameToDisplay) { return 1; }
+            return 0;
+          }).forEach((channelData) => {
+            $("#channelSelect").append(`<option id="${channelData.id}" value="${channelData.id}">${channelData.nameToDisplay}</option>`);
+          })
+          return true;
+        });
       })
   },
   [CONFIG.STEP4]: ({ channelSelect }) => {
