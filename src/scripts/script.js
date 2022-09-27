@@ -193,11 +193,8 @@ const handlers = {
             if (deleteAfterEditing) {
               request(`${url}posts/${post.id}`, 'DELETE');
             }
-            posts = posts.filter(p => p.id !== post.id);
-            sessionStorage.setItem(SessionStorageKeys.posts, JSON.stringify(posts));
-            return removePosts()
           })
-          .catch(() => {
+          .finally(() => {
             posts = posts.filter(p => p.id !== post.id);
             sessionStorage.setItem(SessionStorageKeys.posts, JSON.stringify(posts));
             return removePosts()
@@ -217,11 +214,16 @@ const handlers = {
         pageNumber++;
         if (stopProcess) {
           stopProcess = false
-          stopButton.addClass('invisible')
           stopButton.html('Stop now')
           break
         }
       }
+      
+      // Clean data
+      sessionStorage.removeItem(SessionStorageKeys.editCounter)
+      stopButton.addClass('invisible')
+      $('#in-progress-label').html('')
+      $('#in-progress-post-count').html('')
 
       resolve();
     }));
