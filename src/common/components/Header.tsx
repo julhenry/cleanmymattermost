@@ -1,9 +1,10 @@
 import React from 'react'
+import { Container } from 'react-bootstrap'
 
 export const Header: React.FC = () => {
   return (
-    <nav className='Nav'>
-        <h1 className="text-center text-white py-3">CleanMyMattermost</h1>
-    </nav>
+    <Container>
+        <h1 className="text-center py-3 align-middle">CleanMyMattermost</h1>
+    </Container>
   )
 }

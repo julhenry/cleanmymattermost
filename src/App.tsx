@@ -15,7 +15,6 @@ function App() {
         </Route>
       </Routes>
     </BrowserRouter>
-      <Clean />
     </div>
   );
 }
