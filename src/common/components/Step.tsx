@@ -1,4 +1,5 @@
 import React, { ReactNode } from 'react';
+import './Step.css'
 
 export interface StepProps {
     title: string,
@@ -7,8 +8,8 @@ export interface StepProps {
     children: ReactNode,
 }
 export const Step: React.FC<StepProps> = (props) =>
-    <div className="step">
-        <h3>Step {props.currentStep}/{props.finalStep}</h3>
+    <div className="Step form-items">
+        <h3 className='title'>Step {props.currentStep}/{props.finalStep}</h3>
         <div>
             {props.children}
         </div>
