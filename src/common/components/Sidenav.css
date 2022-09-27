@@ -1,0 +1,36 @@
+.Sidenav {
+    position: absolute;
+    top: 35vh;
+    width: 200px;
+}
+
+.Sidenav ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 10px 0;
+}
+
+.Sidenav ul a {
+    height: 80px;
+    width: 90%;
+    border: 3px solid white;
+    border-left: none;
+    border-radius: 10px;
+    border-top-left-radius: initial;
+    border-bottom-left-radius: initial;
+    margin: 10px 0;
+    text-align: center;
+    -webkit-transition: all 0.4s ease;
+    transition: all 0.4s ease;
+    display: flex;
+    text-decoration: none;
+  }
+
+  .Sidenav ul a:hover {
+    width: 100%;
+  }
+
+  .Sidenav ul a li {
+    color: white;
+    margin: auto;
+  }
