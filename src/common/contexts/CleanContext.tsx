@@ -12,6 +12,7 @@ type CleanContextData = {
   getMyChannels(): void;
   getMyPosts(): void;
   removePosts(): void;
+  getAllPosts(): void;
 };
 
 const CleanContext = createContext<CleanContextData>({} as CleanContextData);
@@ -102,15 +103,26 @@ const CleanProvider: React.FC<Props> = ({children}) => {
     }catch (_){}
   };
 
+  const getAllPosts = async () => {
+    try {
+      setLoading(true);
+      const posts = await CleanService.getInstance().getAllPosts("g3ejc9dhfj8ejxdp6egpex54hw");
+      setCleanData({
+        ...cleanData,
+        posts,
+      });
+    }catch (_){}
+  };
+
   const removePosts = async () => {
     try {
       setLoading(true);
-      await CleanService.getInstance().removePosts(cleanData?.posts ?? [], 'Edition depuis C2M REACT', false);
+      await CleanService.getInstance().removePosts(cleanData?.posts ?? [], 'Edition depuis C2M REACT', true);
     }catch (_){}
   };
 
   return (
-    <CleanContext.Provider value={{cleanData, loading, setURL, getMe, getMyTeams, getMyChannels, getMyPosts, removePosts}}>
+    <CleanContext.Provider value={{cleanData, loading, setURL, getMe, getMyTeams, getMyChannels, getMyPosts, removePosts, getAllPosts}}>
       {children}
     </CleanContext.Provider>
   );

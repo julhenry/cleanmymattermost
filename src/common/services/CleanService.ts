@@ -29,7 +29,7 @@ export class CleanService {
     if(!this.axiosInstance){
       this.axiosInstance = axios.create({
         baseURL: url,
-        timeout: 5000,
+        timeout: 50000,
         headers: {'Authorization': 'Bearer '+token}
       })
     }
@@ -112,7 +112,27 @@ export class CleanService {
     }while (posts.length > 0);
 
     return totalPosts.filter(post => (post as unknown as {user_id: string}).user_id === userId);
-  }
+  };
+
+  getAllPosts = async (channelId: string) => {
+    const getPosts = (numberPage = 0) => {
+      return this.axiosInstance!.get(`channels/${channelId}/posts?page=${numberPage}&per_page=200`)
+        .then((response) => {
+          return Object.values(response.data?.posts ?? {});
+        })
+    };
+
+    let pageNumber = 0;
+    let posts;
+    let totalPosts: any[] = [];
+    do{
+      posts = await getPosts(pageNumber);
+      totalPosts = totalPosts.concat(posts);
+      pageNumber++;
+    }while (posts.length > 0);
+
+    return totalPosts;
+  };
 
   removePosts = async (posts: any[], message: string, deleteAfterEditing = false) => {
     let removePromises: any[] = [];
@@ -132,6 +152,6 @@ export class CleanService {
     return Promise.all(removePromises).finally(() => {
       return true
     })
-  }
+  };
 
 }
