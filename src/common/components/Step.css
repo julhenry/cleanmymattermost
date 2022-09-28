@@ -8,6 +8,7 @@
     -moz-border-radius: 10px;
     border-radius: 10px;
     text-align: left;
+    box-shadow: rgba(10,10,10, 0.8) 0px 8px 24px;
     -webkit-transition: all 0.4s ease;
     transition: all 0.4s ease;
 }
