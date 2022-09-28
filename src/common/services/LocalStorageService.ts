@@ -23,6 +23,14 @@ export class LocalStorageService{
 
   setURL = async (url: string) => {
     return AsyncStorage.setItem(LocalStorageKeys.URL, url)
-  }
+  };
+
+  getToken = async (): Promise<string | null> => {
+    return AsyncStorage.getItem(LocalStorageKeys.Token);
+  };
+
+  setToken = async (token: string) => {
+    return AsyncStorage.setItem(LocalStorageKeys.Token, token)
+  };
 
 }
