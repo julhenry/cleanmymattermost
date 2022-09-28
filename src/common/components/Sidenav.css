@@ -1,13 +1,12 @@
 .Sidenav {
-    position: absolute;
-    top: 35vh;
-    width: 200px;
+    width: 100%;
+    height: 100%;
 }
 
 .Sidenav ul {
   list-style-type: none;
   margin: 0;
-  padding: 10px 0;
+  padding: 0;
 }
 
 .Sidenav ul a {
@@ -28,6 +27,14 @@
 
   .Sidenav ul a:hover {
     width: 100%;
+  }
+
+  .Sidenav ul a:first-child {
+    margin-top: 0;
+  }
+
+  .Sidenav ul a:last-child {
+    margin-bottom: 0;
   }
 
   .Sidenav ul a li {

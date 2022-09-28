@@ -1,0 +1,36 @@
+.Layout {
+    height: 100vh;
+    width: 100vw;
+}
+
+.Layout > div {
+    position: absolute;
+}
+
+.Layout .Layout_header {
+    top: 20vh;
+    bottom: 70vh;
+    left: 20vw;
+    right: 20vw;
+}
+
+.Layout .Layout_main-container {
+    top: 35vh;
+    bottom: 25vh;
+    left: 20vw;
+    right: 20vw;
+}
+
+.Layout .Layout_sidenav {
+    top: 35vh;
+    bottom: 25vh;
+    left: 0;
+    right: 85vw;
+}
+
+.Layout .Layout_footer {
+    top: 97vh;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
