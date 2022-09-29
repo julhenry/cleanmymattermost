@@ -23,7 +23,7 @@
     transition: all 0.4s ease;
     display: flex;
     text-decoration: none;
-    box-shadow: rgba(10,10,10, 0.8) 0px 8px 24px;
+    box-shadow: rgb(10 10 10 / 80%) 0px 4px 14px;
   }
 
   .Sidenav ul a:hover {

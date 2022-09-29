@@ -5,6 +5,6 @@ interface Route {
 export const Routes: {[name: string]: Route} = {
     home: {
         path: '/clean',
-        label: 'Home',
+        label: 'Clean',
     },
 }
